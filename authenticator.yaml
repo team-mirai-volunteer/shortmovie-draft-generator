@@ -1,0 +1,10 @@
+credentials:
+  usernames:
+    team_mirai:
+      email: test@test.com
+      name: team_mirai
+      password: "$2b$12$smt4n3ScydKweAetFHs35Ov9SyYwTUMnQvbD9iFKa1N7HrbnIkeRa"
+cookie:
+  expiry_days: 30
+  key: team-mirai-key
+  name: team_mirai_cookie

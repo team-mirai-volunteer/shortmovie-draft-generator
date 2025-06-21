@@ -1,0 +1,34 @@
+name: Python Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install the latest version of rye
+        uses: eifinger/setup-rye@v4
+        
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            .venv
+            .rye
+          key: ${{ runner.os }}-rye-${{ hashFiles('pyproject.toml', 'requirements*.txt', 'requirements/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-rye-
+          
+      - name: Install dependencies
+        run: |
+          rye sync
+          
+      - name: Run tests
+        run: |
+          rye run pytest

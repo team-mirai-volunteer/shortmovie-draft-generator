@@ -1,0 +1,11 @@
+[client]
+showErrorDetails = true
+
+[theme]
+base="light"
+
+[deprecation]
+showPyplotGlobalUse = false
+
+[logger]
+level = "info"

@@ -1,0 +1,160 @@
+[project]
+name = "youtube-short-clipper"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = "== 3.11.3"
+authors = [
+    { name = "Yoshinori Kosaka", email = "yoshinori.ksk@gmail.com" }
+]
+dependencies = [
+    "openai>=1.57.0",
+    "streamlit>=1.37.0",
+    "promptlayer>=0.4.0",
+    "pydantic-settings>=2.3.3",
+    "pydantic>=2.5.3",
+    "streamlit-authenticator>=0.3.1",
+    "extra-streamlit-components>=0.1.70",
+    "anthropic>=0.21.3",
+    "alembic>=1.13.1",
+    "pymed>=0.8.9",
+    "pypdf2>=3.0.1",
+    "google-search-results>=2.4.2",
+    "beautifulsoup4>=4.12.3",
+    "structlog>=25.1.0",
+    "litellm>=1.43.9",
+    "opencv-python>=4.10.0.84",
+    "python-pptx>=1.0.2",
+    "python-docx>=1.1.2",
+    "tabulate>=0.9.0",
+    "google-auth>=2.35.0",
+    "google-cloud>=0.34.0",
+    "google-cloud-vision>=3.8.0",
+    "boto3>=1.35.60",
+    "google-auth-oauthlib>=1.2.1",
+    "whoosh>=2.7.4",
+    "openpyxl>=3.1.5",
+    "seaborn>=0.13.2",
+    "japanize-matplotlib>=1.1.3",
+    "arxiv>=2.1.3",
+    "pykakasi>=2.3.0",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.29.0",
+    "redis>=5.0.3",
+    "websockets>=12.0",
+    "python-multipart>=0.0.9",
+    "lightgbm>=4.5.0",
+    "scikit-learn>=1.5.2",
+    "streamlit-auth0-component>=0.1.5",
+    "pymysql>=1.1.1",
+    "selenium>=4.27.1",
+    "chromedriver>=2.24.1",
+    "serpapi>=0.1.5",
+    "openapi-python-client>=0.22.0",
+    "streamlit-auth0-component>=0.1.5",
+    "markitdown>=0.0.1a3",
+    "html2text>=2024.2.26",
+    "chardet>=5.2.0",
+    "nest-asyncio>=1.6.0",
+    "slack-sdk>=3.34.0",
+    "geopandas>=1.0.1",
+    "google-auth-httplib2>=0.2.0",
+    "google-api-python-client>=2.156.0",
+    "markdown>=3.7",
+    "colorlog>=6.9.0",
+    "pdf2image>=1.17.0",
+    "browser-use>=0.1.17",
+    "playwright>=1.49.1",
+    "langchain-openai>=0.2.0",
+    "opentelemetry-distro>=0.50b0",
+    "opentelemetry-exporter-jaeger>=1.21.0",
+    "streamlit-nested-layout>=0.1.4",
+    "webdriver-manager>=4.0.2",
+    "openai-agents[viz]>=0.0.17",
+    "pillow>=11.2.1",
+    "rapidfuzz>=3.13.0",
+    "pygments>=2.19.1",
+    "solidspy>=1.1.0.post1",
+    "streamlit-agraph>=0.0.45",
+    "mcp[cli]>=1.9.3",
+    "pymupdf==1.24.10",
+    "pdfkit>=1.0.0",
+    "youtube-transcript-api>=1.1.0",
+    "yt-dlp>=2025.6.9",
+    "ffmpeg>=1.4",
+    "ffmpeg-python>=0.2.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "watchdog>=4.0.0",
+    "pytest>=8.3.0",
+    "ipykernel>=6.29.4",
+    "mypy>=1.10.0",
+    "black>=24.4.2",
+    "google-auth-oauthlib>=1.2.1",
+    "google-api-python-client>=2.153.0",
+    "types-requests>=2.32.0.20241016",
+    "pandas-stubs>=2.2.3.241126",
+    "types-seaborn>=0.13.2.20241204",
+    "pytest-asyncio>=0.25.0",
+    "python-pptx>=1.0.2",
+    "matplotlib>=3.10.0",
+    "seaborn>=0.13.2",
+    "pandas>=2.2.0",
+    "numpy>=1.26.4",
+    "jinja2>=3.1.4",
+]
+
+[tool.black]
+line-length = 180
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.rye.scripts]
+dev = "streamlit run src/streamlit/main.py"
+migrate = "alembic upgrade head"
+test = "pytest"
+
+[tool.mypy]
+# https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
+pretty = true
+show_traceback = true
+color_output = true
+
+allow_redefinition = false
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+ignore_missing_imports = true
+implicit_reexport = false
+no_implicit_optional = false
+show_column_numbers = true
+show_error_codes = true
+show_error_context = true
+strict_equality = true
+strict_optional = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]

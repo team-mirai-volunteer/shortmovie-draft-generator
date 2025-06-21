@@ -1,0 +1,59 @@
+# Python関連
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 仮想環境
+venv/
+ENV/
+.env
+
+# IDE関連
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Git関連
+.git
+.gitignore
+
+# ログファイル
+*.log
+
+# ローカル開発用ファイル
+local_settings.py
+db.sqlite3
+
+# Terraformの状態ファイル
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# その他
+*.bak
+*.tmp
+*.temp
+infra
+.env
+credentials.tfvars
+credentials.tfvars.*
+
+.env.*
