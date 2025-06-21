@@ -14,14 +14,14 @@ def create_reasoning_setting():
     reasoning_effort = st.selectbox(
         "推論レベル",
         ["low", "medium", "high"],
-        index=1,
+        index=0,
         help="推論の深さを選択します。highほど時間がかかりますが、より詳細な推論を行います。",
     )
 
     reasoning_summary = st.selectbox(
         "推論サマリー",
         ["auto", "detailed", "none"],
-        index=1,
+        index=0,
         help="推論過程の表示レベルを選択します。",
     )
 

@@ -249,16 +249,16 @@ with tab2:
             with st.expander("⚙️ 生成設定", expanded=True):
                 col1, col2, col3 = st.columns(3)
                 with col1:
-                    num_scenarios = st.slider("企画案数", 3, 10, 5)
+                    num_scenarios = st.slider("企画案数", 1, 10, 3)
                 with col2:
-                    target_duration = st.slider("目標時間(秒)", 30, 90, 60)
+                    target_duration = st.slider("目標時間(秒)", 30, 180, 60)
                 with col3:
                     scenario_style = st.selectbox("スタイル", ["汎用的", "エンタメ系", "教育系", "ビジネス系"])
 
                 if st.button("📋 企画案を生成", type="primary"):
                     with st.spinner("企画案を生成中..."):
                         scenario_prompt = f"""
-                        YouTube Short用の企画案を生成してください。
+                        YouTube Short用の企画案を生成してください。生成する際には, cut_segments, subtitlesも生成してください。
                         
                         条件：
                         - 企画案数: {num_scenarios}個

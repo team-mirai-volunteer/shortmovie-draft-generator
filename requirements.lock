@@ -76,8 +76,6 @@ et-xmlfile==2.0.0
 extra-streamlit-components==0.1.80
     # via shortmovie-draft-generator
     # via streamlit-authenticator
-ffmpeg==1.4
-    # via shortmovie-draft-generator
 ffmpeg-python==0.2.0
     # via shortmovie-draft-generator
 filelock==3.18.0

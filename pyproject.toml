@@ -40,7 +40,6 @@ dependencies = [
     "pdfkit>=1.0.0",
     "youtube-transcript-api>=1.1.0",
     "yt-dlp>=2025.6.9",
-    "ffmpeg>=1.4",
     "ffmpeg-python>=0.2.0",
 ]
 
