@@ -21,7 +21,8 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # 依存関係のインストール
-COPY requirements.txt .
+COPY requirements.lock .
+RUN sed '/^-e file:/d' requirements.lock > requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # アプリケーションコードのコピー
