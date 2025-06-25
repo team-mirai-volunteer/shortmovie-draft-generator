@@ -10,6 +10,20 @@ from urllib.parse import urlparse, parse_qs
 from src.agent_sdk.schemas.youtube import VideoInfo, YouTubeDownloadResult
 
 
+default_ydl_opts = {
+    "verbose": True,
+    "extractor_args": {
+        "youtube": [
+            "player_client=mweb",  # mweb を指定
+            # rustypipe を PATH 外に置いた場合は↓
+            # "rustypipe_bg_bin=/app/rustypipe-botguard",
+            # キャッシュ有効化（デフォルト true）
+            "rustypipe_bg_pot_cache=1",
+        ]
+    },
+}
+
+
 def extract_video_id_from_url(url: str) -> str:
     """YouTube URLから動画IDを抽出"""
     if "youtu.be/" in url:
@@ -50,13 +64,16 @@ def download_youtube_video(video_url: str, output_dir: Optional[str] = None, inc
             return {"success": False, "error": "無効なYouTube URLです", "video_id": None, "video_path": None, "audio_path": None, "metadata": None}
 
         # yt-dlp設定
-        ydl_opts = {
-            "outtmpl": str(output_path / f"{video_id}_%(title)s.%(ext)s"),
-            "format": f"best[height<={video_quality[:-1]}]",  # 720p -> 720
-            "writeinfojson": True,  # メタデータも保存
-            "writesubtitles": False,  # 字幕は別途取得
-            "writeautomaticsub": False,
-        }
+        ydl_opts = default_ydl_opts.copy()
+        ydl_opts.update(
+            {
+                "outtmpl": str(output_path / f"{video_id}_%(title)s.%(ext)s"),
+                "format": f"best[height<={video_quality[:-1]}]",  # 720p -> 720
+                "writeinfojson": True,  # メタデータも保存
+                "writesubtitles": False,  # 字幕は別途取得
+                "writeautomaticsub": False,
+            }
+        )
 
         video_path = None
         audio_path = None
@@ -131,10 +148,7 @@ def get_video_info(video_url: str) -> YouTubeDownloadResult:
         if not video_id:
             return YouTubeDownloadResult(success=False, error="無効なYouTube URLです")
 
-        ydl_opts = {
-            "quiet": True,
-            "no_warnings": True,
-        }
+        ydl_opts = default_ydl_opts.copy()
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
