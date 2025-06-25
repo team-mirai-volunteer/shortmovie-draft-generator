@@ -41,6 +41,7 @@ dependencies = [
     "youtube-transcript-api>=1.1.0",
     "yt-dlp>=2025.6.9",
     "ffmpeg-python>=0.2.0",
+    "yt-dlp-get-pot-rustypipe>=0.2.0",
 ]
 
 [build-system]

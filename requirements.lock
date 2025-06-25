@@ -413,5 +413,8 @@ youtube-transcript-api==1.1.0
     # via shortmovie-draft-generator
 yt-dlp==2025.6.9
     # via shortmovie-draft-generator
+    # via yt-dlp-get-pot-rustypipe
+yt-dlp-get-pot-rustypipe==0.2.0
+    # via shortmovie-draft-generator
 zipp==3.23.0
     # via importlib-metadata
