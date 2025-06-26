@@ -15,7 +15,15 @@ RUN apt-get update && apt-get install -y \
     curl \
     fonts-ipafont \
     fonts-ipaexfont \
+    xz-utils \
     && rm -rf /var/lib/apt/lists/*
+
+# rustypipe-botguardのインストール
+RUN curl -L -o rustypipe-botguard.tar.xz https://codeberg.org/ThetaDev/rustypipe-botguard/releases/download/v0.1.1/rustypipe-botguard-v0.1.1-x86_64-unknown-linux-gnu.tar.xz \
+    && tar -xf rustypipe-botguard.tar.xz \
+    && chmod +x rustypipe-botguard \
+    && mv rustypipe-botguard /usr/local/bin/ \
+    && rm rustypipe-botguard.tar.xz
 
 # 作業ディレクトリの設定
 WORKDIR /app
