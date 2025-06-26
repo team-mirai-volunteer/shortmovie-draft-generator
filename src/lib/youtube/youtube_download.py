@@ -14,7 +14,7 @@ default_ydl_opts = {
     "verbose": True,
     "extractor_args": {
         "youtube": {
-            "player_client": "mweb",
+            "player_client": ["mweb"],
             "rustypipe_bg_pot_cache": "1",
         }
     },
