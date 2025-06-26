@@ -13,13 +13,10 @@ from src.agent_sdk.schemas.youtube import VideoInfo, YouTubeDownloadResult
 default_ydl_opts = {
     "verbose": True,
     "extractor_args": {
-        "youtube": [
-            "player_client=mweb",  # mweb を指定
-            # rustypipe を PATH 外に置いた場合は↓
-            # "rustypipe_bg_bin=/app/rustypipe-botguard",
-            # キャッシュ有効化（デフォルト true）
-            "rustypipe_bg_pot_cache=1",
-        ]
+        "youtube": {
+            "player_client": "mweb",
+            "rustypipe_bg_pot_cache": "1",
+        }
     },
 }
 
