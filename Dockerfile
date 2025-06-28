@@ -1,5 +1,9 @@
 # Dockerfile
-FROM python:3.11.3-bullseye
+FROM python:3.11-bookworm
+
+# マルチアーキテクチャ対応のためのARG
+ARG TARGETPLATFORM
+
 # システムの依存関係をインストール（MySQLクライアント関連を追加）
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -16,10 +20,17 @@ RUN apt-get update && apt-get install -y \
     fonts-ipafont \
     fonts-ipaexfont \
     xz-utils \
+    libssl3 \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# rustypipe-botguardのインストール
-RUN curl -L -o rustypipe-botguard.tar.xz https://codeberg.org/ThetaDev/rustypipe-botguard/releases/download/v0.1.1/rustypipe-botguard-v0.1.1-x86_64-unknown-linux-gnu.tar.xz \
+# rustypipe-botguardのインストール（マルチアーキテクチャ対応）
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+        ARCH="aarch64-unknown-linux-gnu"; \
+    else \
+        ARCH="x86_64-unknown-linux-gnu"; \
+    fi && \
+    curl -L -o rustypipe-botguard.tar.xz https://codeberg.org/ThetaDev/rustypipe-botguard/releases/download/v0.1.1/rustypipe-botguard-v0.1.1-${ARCH}.tar.xz \
     && tar -xf rustypipe-botguard.tar.xz \
     && chmod +x rustypipe-botguard \
     && mv rustypipe-botguard /usr/local/bin/ \
