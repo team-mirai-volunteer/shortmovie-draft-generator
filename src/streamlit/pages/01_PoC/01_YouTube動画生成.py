@@ -62,6 +62,38 @@ with tab1:
         video_quality = st.selectbox("動画品質", ["720p", "1080p", "480p"], index=0)
         process_transcript = st.checkbox("字幕を自動処理", value=True)
 
+    # Cookies設定（エクスパンダーで隠す）
+    with st.expander("🍪 YouTube Cookies設定 (ボット検出エラー対応)", expanded=False):
+        st.warning("⚠️ ボット検出エラーが出た場合のみ設定してください")
+
+        # Cookiesの説明
+        st.markdown("**🚨 こんなエラーが出た時に使用:**")
+        st.code("ERROR: [youtube] XXXXXXX: Sign in to confirm you're not a bot. Use --cookies-from-browser or --cookies", language="text")
+
+        st.markdown("**📋 方法1: ブラウザ拡張機能（推奨）**")
+        st.markdown("1. Chrome拡張機能「Get cookies.txt LOCALLY」をインストール")
+        st.markdown("2. YouTubeにログインし、拡張機能をクリック")
+        st.markdown("3. 出力されたテキストをそのまま貼り付け")
+
+        st.markdown("**🔧 方法2: 手動取得**")
+        st.markdown("1. Chromeで YouTube にログイン")
+        st.markdown("2. F12 でデベロッパーツールを開く")
+        st.markdown("3. Application → Storage → Cookies → https://www.youtube.com")
+        st.markdown("4. 重要なCookies（HSID, SSID, APISID, SAPISID, SID等）をNetscape形式に変換")
+
+        st.markdown("**🔒 セキュリティ注意事項:**")
+        st.markdown("- Cookiesには個人情報が含まれます")
+        st.markdown("- 他人と共有しないでください")
+        st.markdown("- 使用後は定期的にYouTubeからログアウト・再ログインすることを推奨")
+
+        youtube_cookies = st.text_area(
+            "YouTube Cookies (Netscape形式)",
+            value="",
+            height=100,
+            placeholder="# Netscape HTTP Cookie File\n# This is a generated file! Do not edit.\n\n.youtube.com\tTRUE\t/\tFALSE\t1234567890\tHSID\tAbc123...\n.youtube.com\tTRUE\t/\tFALSE\t1234567890\tSSID\tXyz789...",
+            help="yt-dlpでボット検出エラーが出る場合にのみ必要です。空の場合は通常通り処理されます。",
+        )
+
     # 解析・ダウンロードボタン
     if st.button("動画を解析・ダウンロード", type="primary", disabled=not youtube_url):
         if youtube_url:
@@ -74,7 +106,7 @@ with tab1:
                     video_id = extract_video_id_from_url(youtube_url)
 
                     # 動画情報を取得
-                    video_info_result = get_video_info(youtube_url)
+                    video_info_result = get_video_info(youtube_url, cookies=youtube_cookies if youtube_cookies.strip() else None)
                     if video_info_result.success:
                         video_info = video_info_result.metadata.dict()
                         youtube_context.set_video_info(video_info)
@@ -86,7 +118,9 @@ with tab1:
 
                     # 動画をダウンロード（必要に応じて）
                     if download_video:
-                        download_result = download_youtube_video(youtube_url, video_quality=video_quality, include_audio=extract_audio)
+                        download_result = download_youtube_video(
+                            youtube_url, video_quality=video_quality, include_audio=extract_audio, cookies=youtube_cookies if youtube_cookies.strip() else None
+                        )
                         if download_result.success:
                             # Contextに動画パスを設定
                             youtube_context.set_video_paths(download_result.video_path, download_result.audio_path or "")

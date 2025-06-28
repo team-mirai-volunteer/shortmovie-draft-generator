@@ -10,6 +10,19 @@ from urllib.parse import urlparse, parse_qs
 from src.agent_sdk.schemas.youtube import VideoInfo, YouTubeDownloadResult
 
 
+def cleanup_cookie_file(cookie_file_path: str) -> None:
+    """一時的なCookieファイルを削除
+
+    Args:
+        cookie_file_path: 削除するCookieファイルのパス
+    """
+    try:
+        if cookie_file_path and os.path.exists(cookie_file_path):
+            os.unlink(cookie_file_path)
+    except Exception as e:
+        print(f"Cookieファイル削除エラー: {e}")
+
+
 default_ydl_opts = {
     "verbose": True,
     "extractor_args": {
@@ -35,7 +48,9 @@ def extract_video_id_from_url(url: str) -> str:
         return url
 
 
-def download_youtube_video(video_url: str, output_dir: Optional[str] = None, include_audio: bool = True, video_quality: str = "720p") -> YouTubeDownloadResult:
+def download_youtube_video(
+    video_url: str, output_dir: Optional[str] = None, include_audio: bool = True, video_quality: str = "720p", cookies: Optional[str] = None
+) -> YouTubeDownloadResult:
     """YouTube動画をダウンロードする
 
     Args:
@@ -43,6 +58,7 @@ def download_youtube_video(video_url: str, output_dir: Optional[str] = None, inc
         output_dir: 出力ディレクトリ（指定しない場合は一時ディレクトリ）
         include_audio: 音声ファイルも別途ダウンロードするかどうか
         video_quality: 動画品質（720p, 1080p等）
+        cookies: YouTubeのCookies（Netscape形式またはブラウザからエクスポートした形式）
 
     Returns:
         ダウンロード結果の辞書
@@ -71,6 +87,17 @@ def download_youtube_video(video_url: str, output_dir: Optional[str] = None, inc
                 "writeautomaticsub": False,
             }
         )
+
+        # Cookiesが提供されている場合は追加
+        cookie_file_path = None
+        if cookies:
+            import tempfile
+
+            # 一時的なCookieファイルを作成
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as cookie_file:
+                cookie_file.write(cookies)
+                cookie_file_path = cookie_file.name
+                ydl_opts["cookiefile"] = cookie_file_path
 
         video_path = None
         audio_path = None
@@ -125,17 +152,25 @@ def download_youtube_video(video_url: str, output_dir: Optional[str] = None, inc
                         audio_path = str(file_path)
                         break
 
+        # Cookieファイルのクリーンアップ
+        if cookie_file_path:
+            cleanup_cookie_file(cookie_file_path)
+
         return YouTubeDownloadResult(success=True, video_path=video_path, audio_path=audio_path, metadata=VideoInfo(**metadata) if metadata else None)
 
     except Exception as e:
+        # エラーが発生した場合もCookieファイルをクリーンアップ
+        if "cookie_file_path" in locals() and cookie_file_path:
+            cleanup_cookie_file(cookie_file_path)
         return YouTubeDownloadResult(success=False, error=f"動画ダウンロードエラー: {str(e)}")
 
 
-def get_video_info(video_url: str) -> YouTubeDownloadResult:
+def get_video_info(video_url: str, cookies: Optional[str] = None) -> YouTubeDownloadResult:
     """YouTube動画の情報を取得（ダウンロードなし）
 
     Args:
         video_url: YouTube動画のURL
+        cookies: YouTubeのCookies（Netscape形式またはブラウザからエクスポートした形式）
 
     Returns:
         動画情報の辞書
@@ -146,6 +181,17 @@ def get_video_info(video_url: str) -> YouTubeDownloadResult:
             return YouTubeDownloadResult(success=False, error="無効なYouTube URLです")
 
         ydl_opts = default_ydl_opts.copy()
+
+        # Cookiesが提供されている場合は追加
+        cookie_file_path = None
+        if cookies:
+            import tempfile
+
+            # 一時的なCookieファイルを作成
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as cookie_file:
+                cookie_file.write(cookies)
+                cookie_file_path = cookie_file.name
+                ydl_opts["cookiefile"] = cookie_file_path
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
@@ -168,9 +214,16 @@ def get_video_info(video_url: str) -> YouTubeDownloadResult:
                 "age_limit": info.get("age_limit", 0),
             }
 
+            # Cookieファイルのクリーンアップ
+            if cookie_file_path:
+                cleanup_cookie_file(cookie_file_path)
+
             return YouTubeDownloadResult(success=True, metadata=VideoInfo(**video_info))
 
     except Exception as e:
+        # エラーが発生した場合もCookieファイルをクリーンアップ
+        if "cookie_file_path" in locals() and cookie_file_path:
+            cleanup_cookie_file(cookie_file_path)
         return YouTubeDownloadResult(success=False, error=f"動画情報取得エラー: {str(e)}")
 
 
