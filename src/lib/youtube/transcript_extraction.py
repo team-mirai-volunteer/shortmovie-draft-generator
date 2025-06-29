@@ -67,6 +67,9 @@ def extract_youtube_transcript(video_id: str, languages: List[str] = ["ja", "ja-
         }
 
     except Exception as e:
+        import streamlit as st
+
+        st.error(f"字幕抽出エラー: {e}")
         return {"success": False, "error": f"字幕抽出エラー: {str(e)}", "transcript": None, "language": None, "available_languages": []}
 
 

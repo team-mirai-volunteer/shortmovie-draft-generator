@@ -206,7 +206,7 @@ with tab1:
             transcript_data = youtube_context.transcript_chunks if youtube_context.transcript_chunks else youtube_context.processed_transcript
             if transcript_data:
                 df_data = []
-                for i, chunk in enumerate(transcript_data[:50]):  # 最初の50チャンクのみ表示
+                for i, chunk in enumerate(transcript_data):  # 最初の50チャンクのみ表示
                     start_time = chunk.get("start", 0)
                     duration = chunk.get("duration", 0)
                     end_time = start_time + duration
@@ -220,9 +220,6 @@ with tab1:
 
                 df = pd.DataFrame(df_data)
                 st.dataframe(df, use_container_width=True, height=300)
-
-                if len(transcript_data) > 50:
-                    st.info(f"📊 字幕チャンク総数: {len(transcript_data)}個（上記は最初の50個のみ表示）")
 
             # エージェント開始ボタン
             st.subheader("🤖 企画案生成の開始")
