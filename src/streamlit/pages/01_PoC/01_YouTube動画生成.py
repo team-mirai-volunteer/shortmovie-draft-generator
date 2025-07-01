@@ -4,6 +4,7 @@
 import asyncio
 import os
 import traceback
+import tempfile
 
 from agents import Runner
 
@@ -583,7 +584,6 @@ with tab3:
                         try:
                             # video_processing.pyから直接ffmpegを実行
                             from src.lib.youtube.video_processing import create_short_video, create_subtitle_file
-                            import tempfile
 
                             # プログレスバーの設定
                             progress_bar = st.progress(0)
