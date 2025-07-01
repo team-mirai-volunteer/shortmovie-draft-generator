@@ -91,8 +91,6 @@ def download_youtube_video(
         # Cookiesが提供されている場合は追加
         cookie_file_path = None
         if cookies:
-            import tempfile
-
             # 一時的なCookieファイルを作成
             with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as cookie_file:
                 cookie_file.write(cookies)
@@ -185,8 +183,6 @@ def get_video_info(video_url: str, cookies: Optional[str] = None) -> YouTubeDown
         # Cookiesが提供されている場合は追加
         cookie_file_path = None
         if cookies:
-            import tempfile
-
             # 一時的なCookieファイルを作成
             with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as cookie_file:
                 cookie_file.write(cookies)
