@@ -91,34 +91,34 @@ class CutSegment(BaseModel):
 
 class SubtitleItem(BaseModel):
     """Individual subtitle item with timing and formatted text."""
-    
+
     start_time: float
     end_time: float
     text: str
     line_number: int = 1
-    
+
     @property
     def duration(self) -> float:
         """Duration of the subtitle display."""
         return self.end_time - self.start_time
-    
+
     @validator("end_time")
     def validate_end_after_start(cls, v, values):
         if "start_time" in values and v <= values["start_time"]:
             raise ValueError("end_time must be greater than start_time")
         return v
-    
+
     @validator("start_time", "end_time")
     def validate_positive_times(cls, v):
         if v < 0:
             raise ValueError("Time values must be non-negative")
         return v
-    
+
     @validator("text")
     def validate_text_length(cls, v):
         """Ensure text is appropriate for 2-line display."""
         # 改行を除いた実際の文字数をチェック
-        actual_length = len(v.replace('\n', ''))
+        actual_length = len(v.replace("\n", ""))
         if actual_length > 60:  # 短文制限
             raise ValueError("Subtitle text should be concise (max 60 chars excluding newlines)")
         return v
@@ -145,7 +145,7 @@ class Scenario(BaseModel):
         if v <= 0 or v > 300:  # Max 5 minutes
             raise ValueError("Duration must be between 0 and 300 seconds")
         return v
-    
+
     @validator("subtitles")
     def validate_subtitles_order(cls, v):
         """Ensure subtitles are in chronological order."""

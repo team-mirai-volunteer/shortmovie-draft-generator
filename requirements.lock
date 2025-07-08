@@ -97,6 +97,8 @@ google-auth==2.40.3
     # via shortmovie-draft-generator
 graphviz==0.21
     # via openai-agents
+greenlet==3.2.3
+    # via sqlalchemy
 griffe==1.7.3
     # via openai-agents
 h11==0.16.0
@@ -401,6 +403,8 @@ urllib3==2.5.0
     # via types-requests
 uvicorn==0.34.3
     # via mcp
+watchdog==6.0.0
+    # via streamlit
 webdriver-manager==4.0.2
     # via shortmovie-draft-generator
 websockets==13.1

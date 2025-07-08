@@ -4,12 +4,7 @@ from typing import List
 
 
 @function_tool
-def add_reference_urls(
-    context: RunContextWrapper[ClinicalDevelopmentContext], 
-    domain: str, 
-    urls: List[str], 
-    descriptions: List[str] = None
-) -> str:
+def add_reference_urls(context: RunContextWrapper[ClinicalDevelopmentContext], domain: str, urls: List[str], descriptions: List[str] = None) -> str:
     """指定された領域に複数の参照URLを追加します。
 
     Args:
@@ -23,7 +18,7 @@ def add_reference_urls(
     try:
         if not urls:
             return "URLが指定されていません"
-        
+
         if descriptions is None:
             descriptions = [""] * len(urls)
         else:
@@ -31,11 +26,11 @@ def add_reference_urls(
             descriptions = descriptions + [""] * (len(urls) - len(descriptions))
 
         added_urls = []
-        
+
         for i, url in enumerate(urls):
             desc = descriptions[i] if i < len(descriptions) else ""
             url_with_desc = f"{url} ({desc})" if desc else url
-            
+
             if domain == "project":
                 if url_with_desc not in context.context.project_info.reference_urls:
                     context.context.project_info.reference_urls.append(url_with_desc)
@@ -64,13 +59,13 @@ def add_reference_urls(
                 return f"無効な領域が指定されました: {domain}"
 
         context.context.update_timestamp()
-        
+
         if len(added_urls) == 0:
             return f"{domain}領域に新しい参照URLはありませんでした（重複のため）"
         elif len(added_urls) == 1:
             return f"{domain}領域に参照URLを追加しました: {added_urls[0]}"
         else:
             return f"{domain}領域に{len(added_urls)}個の参照URLを追加しました: {', '.join(added_urls)}"
-            
+
     except Exception as e:
         return f"参照URL追加中にエラーが発生しました: {str(e)}"

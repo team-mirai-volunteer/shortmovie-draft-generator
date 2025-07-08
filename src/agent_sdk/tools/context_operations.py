@@ -63,7 +63,7 @@ def get_transcript(context: RunContextWrapper[YouTubeScenarioContext]) -> Dict[s
             "transcript_text": " ".join([chunk.get("text", "") for chunk in youtube_context.transcript_chunks]),
             "is_extracted": youtube_context.is_transcript_extracted,
             "chunks_count": len(youtube_context.transcript_chunks),
-            "note": "transcript_chunksを使用してください（より正確なタイムスタンプ）"
+            "note": "transcript_chunksを使用してください（より正確なタイムスタンプ）",
         }
 
         return {"success": True, "message": f"字幕データを取得しました（{len(youtube_context.transcript_chunks)}チャンク）", "data": transcript_data}

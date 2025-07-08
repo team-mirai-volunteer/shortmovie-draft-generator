@@ -31,8 +31,6 @@ anyio==4.9.0
     # via openai
     # via sse-starlette
     # via starlette
-appnope==0.1.4
-    # via ipykernel
 asttokens==3.0.0
     # via stack-data
 attrs==25.3.0
@@ -123,6 +121,8 @@ googleapis-common-protos==1.70.0
     # via google-api-core
 graphviz==0.21
     # via openai-agents
+greenlet==3.2.3
+    # via sqlalchemy
 griffe==1.7.3
     # via openai-agents
 h11==0.16.0
@@ -521,6 +521,7 @@ urllib3==2.5.0
 uvicorn==0.34.3
     # via mcp
 watchdog==6.0.0
+    # via streamlit
 wcwidth==0.2.13
     # via prompt-toolkit
 webdriver-manager==4.0.2
