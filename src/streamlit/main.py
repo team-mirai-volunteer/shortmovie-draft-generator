@@ -1,7 +1,7 @@
-import sys, os
+import sys
+import os
 import streamlit as st
-from collections import defaultdict
-from typing import Dict, List, Any, Union
+from typing import Dict, List, Any
 import re
 from dotenv import load_dotenv
 
@@ -74,7 +74,7 @@ def has_streamlit_import(file_path: str) -> bool:
 
         return False
 
-    except (FileNotFoundError, UnicodeDecodeError, PermissionError) as e:
+    except (FileNotFoundError, UnicodeDecodeError, PermissionError):
         # print(f"Error reading file {file_path}: {str(e)}")
         return False
 
@@ -140,7 +140,7 @@ def build_pages_recursively(
             try:
                 current_level_pages.append(st.Page(page_path, title=trimmed_file_name))
                 # print(f"Added page: {page_path} (title: {trimmed_file_name})")
-            except Exception as e:
+            except Exception:
                 # print(f"Error creating page for {page_path}: {str(e)}")
                 pass
 
