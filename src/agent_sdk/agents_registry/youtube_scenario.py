@@ -19,6 +19,10 @@ from src.agent_sdk.tools.context_operations import (
     clear_scenarios,
     clear_cut_segments,
 )
+from src.agent_sdk.tools.chatgpt_operations import (
+    generate_scenarios_with_chatgpt,
+    generate_scenarios_from_prompt,
+)
 from src.agent_sdk.context.youtube_scenario_context import YouTubeScenarioContext
 
 
@@ -149,6 +153,8 @@ add_cut_segment()を使って以下の構造でカットセグメントを追加
         update_scenario,
         delete_scenario,
         clear_scenarios,
+        generate_scenarios_with_chatgpt,
+        generate_scenarios_from_prompt,
         # カットセグメント操作
         add_cut_segment,
         update_cut_segment,
