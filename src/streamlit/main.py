@@ -79,9 +79,7 @@ def has_streamlit_import(file_path: str) -> bool:
         return False
 
 
-def build_pages_recursively(
-    directory_path: str, relative_path: str = "", level: int = 0
-) -> Dict[str, Any]:
+def build_pages_recursively(directory_path: str, relative_path: str = "", level: int = 0) -> Dict[str, Any]:
     """
     ディレクトリを再帰的に処理してページ構造を構築（streamlitをimportするファイルのみ）
 
@@ -110,14 +108,10 @@ def build_pages_recursively(
         if os.path.isdir(item_path):
             # ディレクトリの場合：再帰的に処理
             trimmed_dir_name = trim_initial_number(item)
-            relative_subpath = (
-                os.path.join(relative_path, item) if relative_path else item
-            )
+            relative_subpath = os.path.join(relative_path, item) if relative_path else item
 
             # サブディレクトリを再帰的に処理
-            subdirectory_pages = build_pages_recursively(
-                item_path, relative_subpath, level + 1
-            )
+            subdirectory_pages = build_pages_recursively(item_path, relative_subpath, level + 1)
 
             if subdirectory_pages:
                 pages_structure[trimmed_dir_name] = subdirectory_pages
@@ -152,9 +146,7 @@ def build_pages_recursively(
     return pages_structure
 
 
-def flatten_pages_structure(
-    structure: Dict[str, Any], parent_key: str = "", level: int = 0
-) -> Dict[str, List[Any]]:
+def flatten_pages_structure(structure: Dict[str, Any], parent_key: str = "", level: int = 0) -> Dict[str, List[Any]]:
     """
     ネストした構造をStreamlitのnavigationに適した形式に変換（階層レベル情報付き）
     """
@@ -184,13 +176,9 @@ def flatten_pages_structure(
                 flattened[display_name] = value["_pages"]
 
                 # サブディレクトリも処理
-                sub_structure = {
-                    k: v for k, v in value.items() if k not in ["_pages", "_level"]
-                }
+                sub_structure = {k: v for k, v in value.items() if k not in ["_pages", "_level"]}
                 if sub_structure:
-                    sub_flattened = flatten_pages_structure(
-                        sub_structure, "", current_level + 1
-                    )
+                    sub_flattened = flatten_pages_structure(sub_structure, "", current_level + 1)
                     flattened.update(sub_flattened)
             else:
                 # ページがない場合はサブディレクトリのみ処理
