@@ -235,7 +235,8 @@ def create_short_video(
         if temp_output != output_path:
             if os.path.exists(output_path):
                 os.remove(output_path)
-            os.rename(temp_output, output_path)
+            import shutil
+            shutil.move(temp_output, output_path)
 
         # 一時ファイル削除
         cleanup_temp_directory(temp_dir)

@@ -65,7 +65,15 @@ class VideoSplitter:
         output_path = self.output_dir / safe_filename
 
         try:
-            result = create_short_video(source_video_path=self.source_video_path, cut_segments=[cut_segment], output_path=str(output_path), video_format="mp4", quality="high")
+            cut_segment_dict = {
+                "start_time": cut_segment.start_time,
+                "end_time": cut_segment.end_time,
+                "content": cut_segment.content,
+                "purpose": cut_segment.purpose,
+                "editing_notes": cut_segment.editing_notes
+            }
+            
+            result = create_short_video(source_video_path=self.source_video_path, cut_segments=[cut_segment_dict], output_path=str(output_path), video_format="mp4", quality="high")
 
             return {
                 "index": index,
