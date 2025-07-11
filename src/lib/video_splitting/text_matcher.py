@@ -290,3 +290,132 @@ def is_time_slot_available(start: float, end: float, used_timings: List[tuple]) 
         if not (end <= used_start or start >= used_end):
             return False
     return True
+
+
+def match_qa_with_whisper_temporal(qa_segments: List[Dict], whisper_segments: List[Dict], 
+                                  confidence_threshold: float = 0.3, 
+                                  temporal_weight: float = 0.2) -> List[Dict]:
+    """時系列制約を考慮したQ&AセグメントとWhisperセグメントのマッチング"""
+    matches = []
+    used_whisper_indices = set()
+    allocated_timings = []
+    total_qa = len(qa_segments)
+    
+    print(f"時系列制約付きマッチング開始: temporal_weight={temporal_weight}")
+    
+    normalized_whisper_texts = []
+    for segment in whisper_segments:
+        normalized_whisper_texts.append(normalize_for_matching(segment['text']))
+    
+    last_matched_whisper_time = -1.0
+    
+    for i, qa in enumerate(qa_segments):
+        if i % 100 == 0:
+            print(f"進捗: {i}/{total_qa} ({i/total_qa*100:.1f}%)")
+        
+        best_match = find_best_whisper_match_temporal(
+            qa, whisper_segments, normalized_whisper_texts, 
+            used_whisper_indices, last_matched_whisper_time, temporal_weight
+        )
+        
+        if best_match and best_match["confidence"] >= confidence_threshold:
+            segment = best_match["segment"]
+            buffered_start = max(0, segment["start"] - 2)
+            buffered_end = min(1500, segment["end"] + 2)
+            allocated_timings.append((buffered_start, buffered_end))
+            
+            matches.append({
+                "qa": qa, 
+                "whisper_segment": best_match["segment"], 
+                "confidence": best_match["confidence"], 
+                "match_type": best_match["match_type"],
+                "temporal_bonus": best_match.get("temporal_bonus", 0.0),
+                "text_similarity": best_match.get("text_similarity", 0.0)
+            })
+            used_whisper_indices.add(best_match["index"])
+            last_matched_whisper_time = segment["start"]
+        else:
+            estimated_timing = find_non_overlapping_slot(allocated_timings, 15, 1500)
+            allocated_timings.append((estimated_timing["start"], estimated_timing["end"]))
+            
+            matches.append({
+                "qa": qa, 
+                "whisper_segment": None, 
+                "estimated_timing": estimated_timing, 
+                "confidence": 0.0, 
+                "match_type": "estimated"
+            })
+    
+    print(f"時系列制約付きマッチング完了: {total_qa}件処理済み")
+    return matches
+
+
+def find_best_whisper_match_temporal(qa: Dict, whisper_segments: List[Dict], 
+                                   normalized_whisper_texts: List[str], used_indices: set,
+                                   last_matched_time: float, temporal_weight: float) -> Dict:
+    """時系列制約を考慮した最適なWhisperセグメント検索"""
+    best_match = None
+    best_score = 0
+    
+    qa_texts = {
+        'qtext': normalize_for_matching(qa['qtext']),
+        'text': normalize_for_matching(qa['text']),
+        'combined': normalize_for_matching(qa['combined_text']),
+        'query': normalize_for_matching(qa['query'])
+    }
+    
+    for i, segment in enumerate(whisper_segments):
+        if i in used_indices:
+            continue
+        
+        if segment["start"] <= last_matched_time:
+            continue
+        
+        normalized_whisper_text = normalized_whisper_texts[i]
+        if not normalized_whisper_text:
+            continue
+        
+        text_scores = {}
+        for key, qa_text in qa_texts.items():
+            if qa_text:
+                text_scores[key] = calculate_similarity_optimized(qa_text, normalized_whisper_text)
+            else:
+                text_scores[key] = 0.0
+        
+        max_text_score = max(text_scores.values()) if text_scores else 0.0
+        
+        temporal_bonus = calculate_temporal_bonus(segment["start"], last_matched_time)
+        
+        total_score = max_text_score + (temporal_weight * temporal_bonus)
+        
+        if total_score > best_score:
+            best_score = total_score
+            match_type = max(text_scores, key=text_scores.get)
+            best_match = {
+                "segment": segment,
+                "confidence": total_score,
+                "match_type": match_type,
+                "index": i,
+                "text_similarity": max_text_score,
+                "temporal_bonus": temporal_bonus,
+                "scores": text_scores
+            }
+    
+    return best_match
+
+
+def calculate_temporal_bonus(current_time: float, last_time: float) -> float:
+    """時系列ボーナススコアを計算"""
+    if last_time < 0:
+        return 0.1
+    
+    time_gap = current_time - last_time
+    
+    if 30 <= time_gap <= 120:
+        return 0.3
+    elif 10 <= time_gap < 30:
+        return 0.2
+    elif 120 < time_gap <= 300:
+        return 0.1
+    else:
+        return 0.0

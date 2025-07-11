@@ -6,7 +6,7 @@ from src.lib.youtube.video_processing import create_short_video
 from src.agent_sdk.schemas.youtube import CutSegment
 from .csv_parser import parse_qa_csv
 from .whisper_analyzer import load_whisper_transcript
-from .text_matcher import match_qa_with_whisper
+from .text_matcher import match_qa_with_whisper, match_qa_with_whisper_temporal
 
 
 class VideoSplitter:
@@ -15,7 +15,8 @@ class VideoSplitter:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-    def split_video_from_csv_and_whisper(self, csv_path: str, whisper_json_path: str, confidence_threshold: float = 0.3) -> List[Dict[str, Any]]:
+    def split_video_from_csv_and_whisper(self, csv_path: str, whisper_json_path: str, confidence_threshold: float = 0.3, 
+                                        use_temporal_matching: bool = False, temporal_weight: float = 0.2) -> List[Dict[str, Any]]:
         """CSVファイルとWhisper解析結果を基に動画を1問1答形式に分割"""
         print("CSVとWhisperデータを読み込み中...")
 
@@ -26,7 +27,11 @@ class VideoSplitter:
         print(f"Whisperセグメント数: {len(whisper_segments)}")
 
         print("テキストマッチングを実行中...")
-        matches = match_qa_with_whisper(qa_segments, whisper_segments, confidence_threshold)
+        if use_temporal_matching:
+            print(f"時系列制約付きマッチングを使用 (temporal_weight={temporal_weight})")
+            matches = match_qa_with_whisper_temporal(qa_segments, whisper_segments, confidence_threshold, temporal_weight)
+        else:
+            matches = match_qa_with_whisper(qa_segments, whisper_segments, confidence_threshold)
 
         matched_count = sum(1 for m in matches if m["whisper_segment"] is not None)
         print(f"マッチング成功: {matched_count}/{len(matches)} ({matched_count/len(matches)*100:.1f}%)")

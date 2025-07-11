@@ -23,6 +23,8 @@ def main():
     parser.add_argument("--confidence-threshold", type=float, default=0.3, help="テキストマッチングの信頼度閾値 (デフォルト: 0.3)")
     parser.add_argument("--report", help="処理結果レポートの出力パス", default="split_report.json")
     parser.add_argument("--dry-run", action="store_true", help="実際の動画分割を行わずマッチング結果のみ表示")
+    parser.add_argument("--temporal-matching", action="store_true", help="時系列制約を考慮したマッチングを使用")
+    parser.add_argument("--temporal-weight", type=float, default=0.2, help="時系列ボーナスの重み (デフォルト: 0.2)")
 
     args = parser.parse_args()
 
@@ -45,7 +47,10 @@ def main():
         print("ドライランモード: マッチング結果のみ表示")
     else:
         splitter = VideoSplitter(args.video_path, args.output_dir)
-        results = splitter.split_video_from_csv_and_whisper(args.csv_path, args.whisper_json, args.confidence_threshold)
+        results = splitter.split_video_from_csv_and_whisper(
+            args.csv_path, args.whisper_json, args.confidence_threshold,
+            args.temporal_matching, args.temporal_weight
+        )
 
         successful = [r for r in results if r["success"]]
         failed = [r for r in results if not r["success"]]
